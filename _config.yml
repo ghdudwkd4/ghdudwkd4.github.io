@@ -1,9 +1,7 @@
 title: DR Blog #Your awesome title
 email: ghdudwkd4@gmail.com
 description: > # this means to ignore newlines until "baseurl"
-  Write an awesome description for your new site here. You can edit this
-  line in _config.yml. It will appear in your document head meta (for
-  Google search results) and in your feed.xml site description.
+  일상, 개발, 취미.. 기록
 
 baseurl:  # the subpath of the site
 url: https://ghdudwkd4.github.io # the base hostname & protocol for your site
@@ -23,7 +21,7 @@ user:
   pic: /assets/img/profile.jpg
   picAlt: "An Exhibition of A Hunger Artist"
   job: Muss es sein? Es muss sein!
-  # aboutme: true # comment this out if you don't need the 'about' page.
+  aboutme: true # comment this out if you don't need the 'about' page.
 
 exclude:
   - README.md
