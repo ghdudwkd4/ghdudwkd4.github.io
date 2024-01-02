@@ -4,13 +4,15 @@ Here is the blog of KDR: [https://ghdudwkd4.github.io](https://ghdudwkd4.github.
 
 ## Contents
 
-- [Development](#Development)
+- [Develop](#Develop)
 - [Daily](#Daily)
 
 
 
 ##  Development
-preparing
+- version
+  - jekyll
+    - -4.3.3
 
 ##  Daily
 preparing
