@@ -170,22 +170,21 @@ img {
 }
 
 .aboutme {
-    @include breakpoint(medium) {
-        max-width: 30rem;
-        margin-top: 5.5rem;
+  @include breakpoint(medium) {
+    max-width: 30rem;
+    margin-top: 5.5rem;
 
-        img {
-            float: none;
-        }
+    img {
+      float: none;
     }
-    }
+  }
 
-    @include mobile-only {
-        margin-top: 2rem;
-        margin-left: 1rem;
-        margin-right: 1rem;
-    }
-
+  @include mobile-only {
+    margin-top: 2rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+}
     
 
 ::-webkit-scrollbar {

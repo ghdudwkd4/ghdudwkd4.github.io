@@ -7,7 +7,7 @@ baseurl:  # the subpath of the site
 url: https://ghdudwkd4.github.io # the base hostname & protocol for your site
 
 permalink: /:year-:month/:title
-timezone: GMT+1
+#timezone: GMT+1
 
 favicon: /assets/img/favicon.ico
 
