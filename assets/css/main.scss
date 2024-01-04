@@ -32,6 +32,7 @@
     --blockquote: #333;
     --footer_font: #858585;
     --footer_font_a: #000;
+    --wk_scrollbar_color: rgba(0, 0, 0, 0.5);
     --border_radius: 15px;
 
 }
@@ -57,6 +58,7 @@
     --inlinecode_text: #FFAA00;
     --blockquote: #CACCCE;
     --footer_font_a: #d1d1d1;
+    --wk_scrollbar_color: #d1d1d1;
     --border_radius: 1px;
 }
 
@@ -188,7 +190,7 @@ img {
     
 
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 15px;
     height: 6px;
 }
 
@@ -198,7 +200,7 @@ img {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--wk_scrollbar_color);
     -webkit-border-radius: 0px;
     border-radius: 0px;
 }
