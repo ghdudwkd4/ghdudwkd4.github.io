@@ -3,7 +3,7 @@ title: CentOs 설치 및 간단한 설정
 layout: post
 categories: Develop
 order: 1
-data: 2023-12-27 13:57
+data: 2024-01-05 13:57
 ---
 
 순서
