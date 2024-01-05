@@ -1,7 +1,7 @@
 ---
 title: script 캡슐 방식
 layout: post
-categories: Develop
+categories: develop
 order: 2
 data: 2024-01-05 17:30
 ---
