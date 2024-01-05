@@ -1,5 +1,9 @@
 <footer class="footer">
   <div>
-    &copy; {{ site.time | date: '%Y' }} {{ site.user.name }}.
+      <span>&copy; {{ site.time | date: '%Y' }}</span>
+      |
+      <a href="/feed.xml">RSS</a>
+      |
+      <span> {{ site.user.name }}.</span>
   </div>
 </footer>
