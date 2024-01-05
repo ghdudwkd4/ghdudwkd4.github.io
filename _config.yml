@@ -11,7 +11,7 @@ permalink: /:year-:month/:title
 
 favicon: /assets/img/favicon.ico
 
-google_analytics: GTM-MP7NTJS8
+google_analytics: G-RFN7K56STZ
 disqus_shortname: #disqus shortname
 cusdis:
     app_id: #your cusdis app_id
