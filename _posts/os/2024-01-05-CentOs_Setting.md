@@ -1,7 +1,7 @@
 ---
 title: CentOs 설치 및 간단한 설정 
 layout: post
-categories: develop
+categories: os
 order: 1
 data: 2024-01-05 13:57
 ---
