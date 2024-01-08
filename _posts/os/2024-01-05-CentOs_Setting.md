@@ -259,6 +259,7 @@ make && make install
 
 
 <h2 id="ApacheSetting">3. Apache Setting</h2>
+<p>httpd-conf 설정</p>
 
 ```
 cd /usr/local/apache/conf
@@ -275,14 +276,14 @@ vi httpd-conf
 	# virtual host 셋팅을 위해 제일 하단에 추가
     includ httpd-vhost.conf
 
--- 저장
+# 저장
 :wq
 ```
 
+<p>mod_jk 환경 셋팅</p>
+
 ```
 vi mod_jk.conf
-# mod_jk 환경 셋팅
-
 <IfModule jk_module>
     JkWorkersFile "conf/workers.properties"
     JkLogFile "logs/mod_jk.log"
@@ -293,9 +294,10 @@ vi mod_jk.conf
 </IfModule>
 ```
 
+<p>Workers 셋팅</p>
+
 ```
 vi workers.properties
-# workers 셋팅
 
 # worker list
 worker.list=worker-lb,status
@@ -321,13 +323,13 @@ worker.worker-lb.sticky_session=1
 worker.status.type=status
 ```
 
+<p>Virtual Host 셋팅</p>
+
 ```
 cd extra/
 # ssl 적용 시 httpd-ssl.conf 사용
 
 vi httpd-vhosts.conf
-# virtual host 셋팅
-
 <VirtualHost *:80>
     # 관리자 메일 주소
     # ServerAdmin
@@ -399,8 +401,9 @@ vi httpd-vhosts.conf
 systemctl restart httpd
 ```
 
+<p>Tomcat Setting</p>
+
 ```
-# tomcat setting
 cp -R /usr/local/tomcat /home/{경로}
   
 cd /home/{경로}/conf
