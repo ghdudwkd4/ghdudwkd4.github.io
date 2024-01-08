@@ -183,7 +183,8 @@ WantedBy=multi-user.target
 
 ```
 firewall-cmd --zone=public --list-all
-80 없을 시 아래 실행
+# 80 없을 시 아래 실행
+
 firewall-cmd --permanent --add-port=80/tcp
 firewall-cmd --reload
 ```
@@ -238,6 +239,17 @@ mv apache-tomcat-9.0.84 tomcat9
 ```
 wget https://downloads.apache.org/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.49-src.tar.gz
 tar zxvf tomcat-connectors-1.2.49-src.tar.gz
+
+cd /usr/local/tomcat-connectors-1.2.49/native/
+
+# configure 명령어를 통해 설치경로 정보(여기서는 아파치 설치 경로/usr/local/apache/bin/apxs)를 포함한 make 파일을 생성합니다.
+./configure --with-apxs=/usr/local/apache/bin/apxs
+
+# 정상적으로 make 파일이 생성되었다면 make 파일로 컴파일하고
+# make install로 설치를 진행합니다
+# 이 두 작업을 통시에 수행하기 위해 make && make install 명령을 사용합니다
+# 정상적으로 설치가 완료되면 아파치홈/modules 경로에 mod_jk.so 파일이 생성되게 됩니다.
+make && make install
 ```
 
 <br><br><br><br><br>
@@ -251,21 +263,179 @@ tar zxvf tomcat-connectors-1.2.49-src.tar.gz
 ```
 cd /usr/local/apache/conf
 vi httpd-conf
-	LISTEN 80 : 포트 추가
-	하단에 includ httpd-vhost.conf
+    # 80 포트 추가
+    LISTEN 80
 
-!!!!아직 작성중!!!!
-- mod_jk 모듈 설치도 필요해 보임
-- svn , jenkins 설치에 관한것도 필요해 보임
-jenkins 기존 설치 방법대로 설치 후 다운그레이드는 war 파일만 변경
+    # 모듈 추가
+    LoadModule jk_module modules/mod_jk.so
 
+	# ajp 사용을 위해 mod_jk.con 하단에 추가
+    includ conf/mod_jk.conf
+
+	# virtual host 셋팅을 위해 제일 하단에 추가
+    includ httpd-vhost.conf
+
+-- 저장
+:wq
+```
+
+```
+vi mod_jk.conf
+# mod_jk 환경 셋팅
+
+<IfModule jk_module>
+    JkWorkersFile "conf/workers.properties"
+    JkLogFile "logs/mod_jk.log"
+    JkLogLevel info
+    JkLogStampFormat "[%y %m %d %H:%M:%S] "
+    JkRequestLogFormat "%w %V %T"
+    jkShmFile logs/modjk.shm
+</IfModule>
+```
+
+```
+vi workers.properties
+# workers 셋팅
+
+# worker list
+worker.list=worker-lb,status
+
+#client node1
+worker.node1.port=18009
+worker.node1.host=127.0.0.1
+worker.node1.type=ajp13
+worker.node1.ping_mode=A
+worker.node1.lbfactor=1
+
+#client node2
+worker.node2.port=18010
+worker.node2.host=127.0.0.1
+worker.node2.type=ajp13
+worker.node2.ping_mode=A
+worker.node2.lbfactor=1
+
+# Load-balancing behavior
+worker.worker-lb.type=lb
+worker.worker-lb.balance_workers=node1,node2
+worker.worker-lb.sticky_session=1
+worker.status.type=status
+```
+
+```
 cd extra/
+# ssl 적용 시 httpd-ssl.conf 사용
 
-※ ss -atnlp 실행중인 port 확인?
+vi httpd-vhosts.conf
+# virtual host 셋팅
 
+<VirtualHost *:80>
+    # 관리자 메일 주소
+    # ServerAdmin
 
-jenkins 설정 파일 위치
-cd /usr/lib/systemd/system
+    # project 경로
+    DocumentRoot "/home/{경로}/ROOT"
+
+    ServerName 127.0.0.1
+
+    # JkMount Tomcat 에서 사용
+    JkMount /*          worker-lb
+    JkMount /*.jsp      worker-lb
+    JkMount /*.json     worker-lb
+    JkMount /*.xml      worker-lb
+    JkMount /*.do       worker-lb
+    JkMount /resources  worker-lb
+
+    # JkUnMount Apache 에서 사용
+    JkUnMount /js/*     worker-lb
+    JkUnMount /css/*    worker-lb
+    JkUnMount /img/*    worker-lb
+    JkUnMount /fonts/*  worker-lb
+    JkUnMount /upload/* worker-lb
+
+    # Apache 에서 읽을 수 있게 Alias
+    Alias /css /home/{경로}/css
+    Alias /fonts /home/{경로}/fonts
+    Alias /img /home/{경로}/img
+    Alias /js /home/{경로}/js
+    Alias /template /home/{경로}/template
+    Alias /upload /home/{경로}/upload
+
+    ErrorLog "logpath"
+    CustomLog "logpath" common
+
+    # Directory
+    # Options : 특정 디렉토리에서 사용할 수 있는 서버 기능을 제어한다.
+              - All : 모든 Options가 MultiViews에 허용된다.
+              - Indexes : 클라이언트가 요청한 디렉토리 경로에 DirectoryIndex 지시자에 설정한 파일이 없을 경우
+                          디렉토리 목록을 화면에 표시한다. (디렉토리 리스팅)
+              - FollowSymLinks : 설정한 디렉토리에서 심볼릭 링크를 허용한다.
+              - 이외에도 다양함, 대중적으로 쓰는것만 적음
+
+    # AllowOverride : .htaccess 파일의 사용 여부를 결정한다.
+                    - All | None
+
+    # Require : 해당 디렉토리의 접근 허용 여부를 설정한다.
+              - all denied(모든접근 거부) , all granted(모든 접근 허용) 이외에도 IP,도메인으로 셋팅 가능
+    
+    # Order : 디렉토리 접근 권한을 위한 지시자
+            - allow, deny : 디렉토리에 접근에 대해 먼저 허용하고 그 다음이 거부하겠다
+
+    # Allow from : 모든곳에서 들어오는 접속을 허용
+                 - all | domain
+    
+    <Directory />
+        Options FollowSymLinks
+        AllowOverride None
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+</VirtualHost>
+
+# 저장
+:wq
+
+# httpd 재시작
+systemctl restart httpd
+```
+
+```
+# tomcat setting
+cp -R /usr/local/tomcat /home/{경로}
+  
+cd /home/{경로}/conf
+vi server.xml
+
+# 신경써야 할 부분
+# 1. 최상단 <Server> 태그의 port : Was Port
+# 2. 중간 <Service> 안의 <Connector> 태그 : Ajp Port
+# 3. 바로 아래 <Engine> 태그 : load balancing 을 위한 태그
+# 4. 제일 하단 <Host> 태그 : 도메인 경로 , war 패키징 여부 , appBase 경로
+
+======================================================================
+# 첫 프로젝트라면 그냥 사용해도 무방
+<Server port="8005">
+
+# port : workers.properties 에서 작성한 port 사용
+# secretRequired : workers.properties 에서 작성 가능 (보안상 작성하는게 좋음)
+<Connector protocol="AJP/1.3"
+           port="18014"
+           redirectPort="8443"
+           address="0.0.0.0"
+           secretRequired="false"
+           />
+
+# jvmRoute workers.properties 에서 작성한 node 사용
+<Engine name="Catalina" defaultHost="localhost" jvmRoute="node1">
+
+# 
+<Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="true">
+
+# 저장
+:wq
+
+cd ../bin/
+sudo ./startup.sh
 ```
 
 <br><br><br><br><br>
@@ -313,9 +483,7 @@ set ruler                               ## 좌표 표시
 colo koehler                            ## 색상 테마
 ```
 
-<br><br><br><br><br>
-
-
+<br><br><br>
 
 
 
@@ -324,3 +492,8 @@ colo koehler                            ## 색상 테마
  - 랙 장비
    - 랙 PC 별 cmos 기능이 다름
    - disk raid1 잡은후 복구 기능확인 필요!!!
+   
+<br >
+<hr >
+다음 내용엔 Jenkins Setting 에 관한걸 작성해보겠습니다.
+<hr >
