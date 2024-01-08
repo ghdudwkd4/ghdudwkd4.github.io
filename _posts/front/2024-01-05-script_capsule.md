@@ -1,12 +1,12 @@
 ---
-title: script 캡슐 방식
+title: script OOP 방식
 layout: post
 categories: front
 order: 2
 data: 2024-01-05 17:30
 ---
 
-### 깔끔한 스크립트 캡슐화 로직
+### 깔끔한 스크립트 OOP 방식
 
 사실 JAVA 를 배우고, 사용함에 있어 OOP(객체지향)라는 것을 많이들 접했을것이다.<br >
 이걸 Front 에서 작업 할때도 사용 할 수 있는데,<br >
