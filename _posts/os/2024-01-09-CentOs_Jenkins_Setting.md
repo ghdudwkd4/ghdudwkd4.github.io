@@ -2,7 +2,7 @@
 title: CentOs Jenkins Setting
 layout: post
 categories: os
-order: 1
+order: 2
 data: 2024-01-09 10:25
 ---
 
