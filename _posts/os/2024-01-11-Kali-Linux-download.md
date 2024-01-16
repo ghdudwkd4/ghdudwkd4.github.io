@@ -1,5 +1,5 @@
 ---
-title: Kali Linux - 1
+title: Kali Linux - download and setting
 layout: post
 categories: os
 order: 4
