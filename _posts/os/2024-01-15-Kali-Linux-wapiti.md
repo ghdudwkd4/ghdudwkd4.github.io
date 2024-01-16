@@ -1,12 +1,12 @@
 ---
-title: Kali Linux - 2
+title: Kali Linux - wapiti
 layout: post
 categories: os
 order: 5
 data: 2024-01-15 14:31
 ---
 
-# Kali Linux
+# Kali Linux - wapiti
 
 글 쓰기에 앞서 [Wapiti 깃 홈페이지](https://github.com/wapiti-scanner/wapiti/){:target="_blank"}
 를 참고했음을 알려드립니다.
