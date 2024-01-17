@@ -47,19 +47,19 @@ usage: wapiti [-h] [-u URL] [--data data] [--scope {page,folder,domain,url,punk}
 
 다음은 옵션 요약입니다. 각 옵션에 대한 자세한 내용은 다음 섹션에서 확인할 수 있습니다.
 
-대상 사양:
+[대상](#target):
 
   * `-u, --url <URL>`
   * `--data <URL_ENCODED_DATA>`
   * `--scope {page,folder,domain,url,punk}`
 
-공격 사양:
+[공격 모듈](#attack):
 
   * `-m <MODULES_LIST>`
   * `--list-modules`
   * `-l, --level <LEVEL>`
 
-프록시 및 인증 옵션:
+[프록시 및 인증 옵션](#proxy):
 
   * `-p, --proxy <PROXY_URL>`
   * `--tor`
@@ -77,7 +77,7 @@ usage: wapiti [-h] [-u URL] [--data data] [--scope {page,folder,domain,url,punk}
   * `-c, --cookie <COOKIE_FILE_OR_BROWSER_NAME>`
   * `--drop-set-cookie`
 
-세션 옵션:
+[세션 옵션](#session):
 
   * `--skip-crawl`
   * `--resume-crawl`
@@ -86,7 +86,7 @@ usage: wapiti [-h] [-u URL] [--data data] [--scope {page,folder,domain,url,punk}
   * `--store-session <PATH>`
   * `--store-config <PATH>`
 
-스캔 및 공격 조정:
+[스캔 및 공격 튜닝](#scan):
 
   * `-s, --start <URL>`
   * `-x, --exclude <URL>`
@@ -101,40 +101,40 @@ usage: wapiti [-h] [-u URL] [--data data] [--scope {page,folder,domain,url,punk}
   * `-S, --scan-force {paranoid,sneaky,polite,normal,aggressive,insane}`
   * `--tasks <TASKS>`
 
-엔드포인트 옵션:
+[엔드포인트 옵션](#endPoint):
 
   * `--external-endpoint <EXTERNAL_ENDPOINT_URL>`
   * `--internal-endpoint <INTERNAL_ENDPOINT_URL>`
   * `--endpoint <ENDPOINT_URL>`
   * `--dns-endpoint <DNS_ENDPOINT_DOMAIN>`
 
-HTTP 및 네트워크 옵션:
+[HTTP 및 네트워크 옵션](#network):
 
   * `-t, --timeout <SECONDS>`
   * `-H, --header <HEADER>`
   * `-A, --user-agent <AGENT>`
   *  `--verify-ssl {0,1}`
 
-출력 옵션:
+[출력 옵션](#print):
 
   * `--color`
   * `-v, --verbose <LEVEL>`
   * `--log <OUTPUT_PATH>`
 
-보고서 옵션:
+[보고서 옵션](#report):
 
   * `-f, --format {json,html,txt,xml}`
   * `-o, --output <OUTPUT_PATH>`
   * `-dr, --detailed-report`
 
-다른 옵션:
+[다른 옵션](#etc):
 
   * `--no-bugreport`
   * `--version`
   * `--update`
   * `-h`
 
-## 대상 사양
+<h2 id="target">대상</h2>
 
   * `-u, --url <URL>`
     스캔의 기반으로 사용될 URL입니다. 스캔 중에 발견된 모든 URL은 기본 URL 및 해당 스캔 범위와 비교하여 확인됩니다(자세한 내용은 --scope 참조).
@@ -151,7 +151,7 @@ HTTP 및 네트워크 옵션:
       - domain : 도메인 이름이 기본 URL의 이름과 일치하는 모든 URL을 검사하고 공격합니다.
       - punk : 도메인에 관계없이 발견된 모든 URL을 검사하고 공격합니다. 해당 범위를 사용하기 전에 두 번 생각하십시오.
     
-## 공격 사양
+<h2 id="attack">공격 모듈</h2>
 
   * `-m, --module <MODULE_LIST>`
     대상에 대해 실행할 공격 모듈(쉼표로 구분된 모듈 이름) 목록을 설정합니다.
@@ -171,8 +171,117 @@ HTTP 및 네트워크 옵션:
     이 동작은 이제 이 옵션 뒤에 숨겨져 있으며 -l을 2로 설정하여 다시 활성화할 수 있습니다.
     개발자가 쿼리 문자열 자체를 구문 분석해야 하는 경우 CGI에서 유용할 수 있습니다.
     이 옵션의 기본값은 1입니다.
+  
+
+### 지원되는 공격 / 모듈 이름
+  
+  * SQL 주입(오류 기반, 부울 기반, 시간 기반) 및 XPath 주입
+    * sql(오류 기반 및 부울 기반 SQL 주입 감지)
+    * timesql(시간 기반 방법으로 탐지된 SQL 주입 취약점)
+
+  * 코드 실행 또는 명령 주입
+    * exec
+  
+  * XSS(교차 사이트 스크립팅)가 반영되고 영구적입니다.
+    * xss(XSS 주입 모듈)
+    * Permanentxss(이전에 오염된 페이로드를 찾기 위해 xss 모듈 실행 후 전체 대상을 다시 검색)
+  
+  * 파일 공개 감지(로컬 및 원격 포함, 요구, fopen, readfile...)
+    * file(경로 탐색, 파일 포함 등)
     
-## 프록시 및 인증
+  * 명령 실행 감지(eval(), system(), passtru()...)
+    * ???
+  
+  * XXE(Xml eXternal Entity) 삽입
+    * xxe(XML 외부 엔터티 공격)
+    
+  * CRLF 주입
+    * crlf(HTTP 헤더에 CR-LF 삽입)
+    
+  * 서버에서 잠재적으로 위험한 파일 검색
+    * nikto(URL 존재 여부를 테스트하고 응답을 확인하여 알려진 취약점을 찾습니다)
+  
+  * 약한 htaccess 구성 우회
+    * htaccess
+    
+  * 서버에서 스크립트 복사본(백업) 검색
+    * backup (웹 서버의 스크립트 및 아카이브 사본 검색)
+  
+  * 쉘쇼크
+    * shellshock(Shellshock 공격 테스트, Wikipedia 참조 )
+    
+  * 폴더 및 파일 열거(DirBuster 유사)
+    * Buster (DirBuster 같은 모듈)
+    
+  * 서버 측 요청 위조(외부 Wapiti 웹사이트 사용을 통해)
+    * ssrf(서버측 요청 위조)
+  
+  * 오픈 리디렉션
+    * redirect (오픈 리디렉션)
+    
+  * 일반적이지 않은 HTTP 메소드(예: PUT) 감지
+    * methods(PUT과 같이 일반적이지 않은 사용 가능한 HTTP 메소드를 찾으십시오.)
+  
+  * 기본 CSP 평가자
+    * csp (CSP 부족 또는 약한 CSP 구성 감지)
+    
+  * 무차별 로그인 양식(사전 목록 사용)
+    * brute_login_form(사전 목록을 사용한 무차별 로그인 양식)
+  
+  * HTTP 보안 헤더 확인
+    * http_header(HTTP 보안 헤더 확인)
+  
+  * 쿠키 보안 플래그 확인(보안 및 httponly 플래그)
+    * cookieflags(Secure 및 HttpOnly 플래그 확인)
+  
+  * CSRF(교차 사이트 요청 위조) 기본 탐지
+    * csrf(CSRF로부터 보호되지 않거나 약한 안티-CSRF 토큰을 사용하는 양식 감지)
+    
+  * Wappalyzer 데이터베이스를 사용한 웹 애플리케이션 지문 인식
+  
+  * Wordpress 및 Drupal 모듈 열거
+    * wp_enum(Wordpress 웹사이트의 플러그인 및 테마 열거)
+    * drupal_enum(Drupal 버전 감지)
+  
+  * 하위 도메인 인수 감지
+    * takeover (하위 도메인 인수)
+    
+  * Log4Shell(CVE-2021-44228) 탐지
+    * log4shell(CVE-2021-44228에 취약한 웹사이트 탐지)
+  
+  * Spring4Shell(CVE-2020-5398) 탐지
+    * spring4shell(CVE-2020-5398에 취약한 웹사이트 탐지)
+    
+  * https 리디렉션 확인
+    * https_redirect(https 리디렉션 확인)
+  
+  * 파일 업로드 취약점 확인
+    * upload(파일 업로드 취약점)
+
+<hr >
+  
+  * Wapiti는 공격에 대해 GET 및 POST HTTP 방법을 모두 지원합니다.
+    또한 멀티파트를 지원하고 파일 이름에 페이로드를 삽입할 수 있습니다(업로드).
+    예외 사항(예: 500 오류 및 시간 초과)이 발견되면 경고를 표시합니다.
+    영구적인 XSS 취약점과 반영된 XSS 취약점을 구분합니다.
+
+<hr >
+  
+  * 모듈 이름은 "-m" 또는 "--module" 옵션을 사용하여 쉼표로 구분된 목록으로 제공될 수 있습니다.
+  
+### 찾지 못한 모듈 이름..
+
+
+앞서 언급한 공격은 다음 모듈 이름과 연결되어 있습니다.
+  
+  * htp(HashThePlanet 데이터베이스를 사용하는 웹 기술 식별)
+  
+  * ssl(SSL/TLS 인증서 구성의 보안 평가, SSLyze 필요 )
+  
+  * wapp (공격 모듈이 아니며 대상에서 사용 중인 버전 및 카테고리로 웹 기술을 검색합니다)
+    
+    
+<h2 id="proxy">프록시 및 인증 옵션</h2>
 
   * `-p, --proxy <PROXY_URL>`
     주어진 URL은 HTTP 및 HTTPS 요청에 대한 프록시로 사용됩니다. 이 URL은 http, https, 양말 구성표 중 하나를 가질 수 있습니다.
@@ -225,7 +334,7 @@ HTTP 및 네트워크 옵션:
   * `--drop-set-cookie`  
     HTTP 응답에 제공된 쿠키를 무시합니다. 를 사용하여 로드된 쿠키는 `-c`유지됩니다.
     
-## 세션
+<h2 id="session">세션 옵션</h2>
 
 Wapiti 3.0.0부터 스캔된 URL, 발견된 취약점 및 공격 상태는 Wapiti 세션 파일로 사용되는 sqlite3 데이터베이스에 저장됩니다.
 지정된 기본 URL 및 범위에 대해 이전 스캔 세션이 존재할 때의 기본 동작은 스캔 및 공격 상태를 재개하는 것입니다.
@@ -252,7 +361,8 @@ Wapiti 3.0.0부터 스캔된 URL, 발견된 취약점 및 공격 상태는 Wapit
   * `--store-config` <PATH>  
     특정 모듈(`apps.json` 및 `nikto_db`) 파일을 저장하기 위한 대체 경로를 지정합니다.
 
-## 스캔 및 공격 튜닝
+
+<h2 id="scan">스캔 및 공격 튜닝</h2>
 
   * `-s, --start <URL>`
     어떤 이유로 Wapiti가 기본 URL에서 URL을 전혀(또는 충분한) 찾지 못하는 경우에도 URL을 추가하여 스캔을 시작할 수 있습니다.
@@ -316,7 +426,7 @@ Wapiti 3.0.0부터 스캔된 URL, 발견된 취약점 및 공격 상태는 Wapit
     Wapiti가 사용해야 하는 동시 작업 수를 설정합니다.
     Wapiti는 이를 위해 Python의 asyncio 프레임워크를 활용합니다.
     
-## 엔드포인트 옵션
+<h2 id="endPoint">엔드포인트 옵션</h2>
 
 일부 공격 모듈은 취약점을 확인하기 위해 HTTP 엔드포인트를 사용하고 있습니다.
 예를 들어 SSRF 모듈은 엔드포인트 URL을 웹 페이지 인수에 삽입하여 대상 스크립트가 해당 URL을 가져오려고 하는지 확인합니다.
@@ -339,7 +449,7 @@ Wapiti 3.0.0부터 스캔된 URL, 발견된 취약점 및 공격 상태는 Wapit
     이 옵션은 log4shell 공격 모듈에 사용할 DNS 엔드포인트를 지정합니다.
     기본값은 dns.wapiti3.ovh입니다.
     
-## HTTP 및 네트워크 옵션
+<h2 id="network">HTTP 및 네트워크 옵션</h2>
 
   * `-t, --timeout <SECONDS>`
     실패를 고려하기 전에 HTTP 응답을 기다리는 시간(초)입니다.
@@ -356,7 +466,7 @@ Wapiti 3.0.0부터 스캔된 URL, 발견된 취약점 및 공격 상태는 Wapit
     Wapiti는 기본적으로 인증서 유효성 검사를 신경 쓰지 않습니다. 해당 옵션에 1을 값으로 전달하여 해당 동작을 변경할 수 있습니다.
 
     
-## 출력 옵션
+<h2 id="print">출력 옵션</h2>
 
 Wapiti는 상태를 표준 출력으로 인쇄합니다. 다음 두 가지 옵션을 사용하면 출력을 조정할 수 있습니다.
 
@@ -370,7 +480,7 @@ Wapiti는 상태를 표준 출력으로 인쇄합니다. 다음 두 가지 옵�
     콘솔에서 정보를 얻는 것 외에도 출력을 로컬 파일에 기록할 수도 있습니다.
     디버그 정보도 해당 파일에 저장되므로 이 옵션은 주로 Wapiti를 디버깅하는 데 사용해야 합니다.
 
-## 보고서 옵션
+<h2 id="report">보고서 옵션</h2>
 
 Wapiti는 공격 프로세스가 끝나면 보고서를 생성합니다. 다양한 형식의 보고서를 사용할 수 있습니다.
 
@@ -384,7 +494,7 @@ Wapiti는 공격 프로세스가 끝나면 보고서를 생성합니다. 다양�
   * `-dr, --detailed-report`  
     HTTP 응답(헤더 및 본문)이 보고서에 표시됩니다.
     
-## 다른 옵션
+<h2 id="etc">다른 옵션</h2>
 
   * `--version`  
     Wapiti 버전을 인쇄한 후 종료하세요.
@@ -411,11 +521,11 @@ Wapiti는 GNU General Public License(GPL) 버전 2의 적용을 받습니다. �
 
 ## 모듈 사용 예
 
-sql,xss,xxe 모든 모듈사용해서 공격
+sql,xss,xxe 등등 모든 모듈사용해서 공격
 `wapiti -u http://sites/ -m all`
 
-sql,xss,xxe 모듈 공격
-`wapiti -u http://sites/ -m sql,xss,xxe`
+sql,xss 모듈 공격
+`wapiti -u http://sites/ -m sql,xss`
 
 공격 없이 리포트만 작성
 `wapiti -u http://sites/ -m ""`
