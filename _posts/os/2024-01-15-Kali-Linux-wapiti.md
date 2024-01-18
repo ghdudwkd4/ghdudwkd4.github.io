@@ -271,9 +271,6 @@ usage: wapiti [-h] [-u URL] [--data data] [--scope {page,folder,domain,url,punk}
   
 ### 찾지 못한 모듈 이름..
 
-
-앞서 언급한 공격은 다음 모듈 이름과 연결되어 있습니다.
-  
   * htp(HashThePlanet 데이터베이스를 사용하는 웹 기술 식별)
   
   * ssl(SSL/TLS 인증서 구성의 보안 평가, SSLyze 필요 )
