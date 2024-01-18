@@ -522,7 +522,8 @@ sql,xss 모듈 공격
 
 ## 특허
 
-Wapiti는 GNU General Public License(GPL) 버전 2의 적용을 받습니다. 자세한 내용은 LICENSE 파일을 읽어보세요.
+Wapiti는 GNU General Public License(GPL) 버전 2의 적용을 받습니다.<br >
+자세한 내용은 wapiti Git [LICENSE](https://github.com/wapiti-scanner/wapiti/blob/master/LICENSE) 파일을 읽어보세요.
 
 ## COPYRIGHT
 
