@@ -2,7 +2,7 @@
 title: Mysql Authority
 layout: post
 categories: database
-order: 1
+order: 2
 data: 2024-02-27 15:20
 ---
 
