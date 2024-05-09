@@ -46,7 +46,8 @@ manifest.json , html , 게시 아이콘용 img 세개만 있어도 만들수가 
     "32": "img/icon-32.png",
     "48": "img/icon-48.png",
     "128": "img/icon-128.png"
-  }
+  },
+  "host_permissions": ["http://*/*","https://*/*"]  // 접근 허용할 host
 }
 ```
 
