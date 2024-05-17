@@ -79,24 +79,31 @@ dnf install -y gcc gcc-c++ pcre-devel expat-devel
 cd /usr/local/src
 ```
 
+<h3>0. apache 최신버전 / 이전버전 다운로드 </h3>
+
+```
+이전버전 : https://archive.apache.org/dist/
+최신버전 : https://downloads.apache.org
+```
+
 <h3>1. httpd : 2.4.58</h3>
 
 ```
-wget https://downloads.apache.org//{버전에 맞는 tar.gz 파일}
+wget https://archive.apache.org/dist/httpd/{버전에 맞는 tar.gz 파일}
 tar -xvf apr-{버전에 맞는 tar.gz 파일}
 ```
 
 <h3>2. apr : 1.7.4</h3>
 
 ```
-wget https://downloads.apache.org//apr/apr-{버전에 맞는 tar.gz 파일}
+wget https://archive.apache.org/dist/apr/apr-{버전에 맞는 tar.gz 파일}
 tar -xvf apr-{버전에 맞는 tar.gz 파일}
 ```
 
 <h3>3. apr-util : 1.6.3</h3>
 
 ```
-wget https://downloads.apache.org//apr/apr-util-{버전에 맞는 tar.gz 파일}
+wget https://archive.apache.org/dist/apr/apr-util-{버전에 맞는 tar.gz 파일}
 tar -xvf apr-util-{버전에 맞는 tar.gz 파일}
 ```
 
@@ -229,7 +236,7 @@ cd /usr/local/
 <h3>2. Tomcat // wget 로 설치함</h3>
 
 ```
-wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.84/bin/apache-tomcat-9.0.84.tar.gz
+wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.84/bin/apache-tomcat-9.0.84.tar.gz
 tar zxvf apache-tomcat-9.0.84.tar.gz
 mv apache-tomcat-9.0.84 tomcat9
 ```
@@ -237,7 +244,7 @@ mv apache-tomcat-9.0.84 tomcat9
 <h3>3. ajp 연동시 필수 Tomcat-connector // wget 로 설치함</h3>
 
 ```
-wget https://downloads.apache.org/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.49-src.tar.gz
+wget https://archive.apache.org/dist/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.49-src.tar.gz
 tar zxvf tomcat-connectors-1.2.49-src.tar.gz
 
 cd /usr/local/tomcat-connectors-1.2.49/native/
