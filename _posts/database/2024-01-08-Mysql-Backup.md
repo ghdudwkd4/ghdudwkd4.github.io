@@ -1,5 +1,5 @@
 ---
-title: Mysql Backup
+title: Mysql 백업
 layout: post
 categories: database
 order: 1

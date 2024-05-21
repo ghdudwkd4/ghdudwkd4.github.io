@@ -1,5 +1,5 @@
 ---
-title: Kali Linux - download and setting
+title: Kali Linux - 다운로드 및 셋팅
 layout: post
 categories: os
 order: 4

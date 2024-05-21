@@ -1,5 +1,5 @@
 ---
-title: Linux CronTab
+title: Linux 스케줄러 CronTab
 layout: post
 categories: os
 order: 6

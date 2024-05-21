@@ -1,5 +1,5 @@
 ---
-title: CentOs Jenkins Setting
+title: Linux CentOs 젠킨스 다운로드 및 설치
 layout: post
 categories: os
 order: 2
