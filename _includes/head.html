@@ -14,6 +14,10 @@
     <meta name="google-site-verification" content="Pg9-M77UQm7jwzucx92S60ewPrG_-9rUiW2fh6HIp5w"/>
     <meta name="description" content="{{ title }}" />
 
+    <meta property="og:description" content="{{ title }}" />
+    <meta property="og:image" content="{{ site.user.pic }}" />
+    <meta property="og:url" content="{{ site.url }}{{ page.url }}"/>
+
     <link rel="stylesheet" href="{{ 'assets/css/main.css' | relative_url }}" media="all">
     <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.url }}">
     <link rel="alternate" type="application/rss+xml" title="{{ site.title | escape }}"
