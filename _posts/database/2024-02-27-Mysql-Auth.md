@@ -1,5 +1,5 @@
 ---
-title: Mysql Authority
+title: Mysql 권한 처리
 layout: post
 categories: database
 order: 2

@@ -1,5 +1,5 @@
 ---
-title: VirtualBox download
+title: VirtualBox 다운로드 및 셋팅
 layout: post
 categories: os
 order: 3
