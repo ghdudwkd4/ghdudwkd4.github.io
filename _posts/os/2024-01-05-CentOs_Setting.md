@@ -79,11 +79,15 @@ dnf install -y gcc gcc-c++ pcre-devel expat-devel
 cd /usr/local/src
 ```
 
-<h3>0. apache 최신버전 / 이전버전 다운로드 </h3>
+<h3>apache 최신버전 / 이전버전 링크 / 패키지 설치 </h3>
 
 ```
 이전버전 : https://archive.apache.org/dist/
 최신버전 : https://downloads.apache.org
+
+※ 패키지 설치
+dnf 일 시 dnf install -y gcc gcc-c++ pcre-devel expat-devel
+yum 일 시 install -y gcc gcc-c++ pcre-devel expat-devel
 ```
 
 <h3>1. httpd : 2.4.58</h3>
