@@ -8,12 +8,30 @@ data: 2024-01-09 10:25
 
 # CentOs 에 Jenkins 설치방법
 
+<p>젠킨스 설치에 앞서 젠킨스는 java 로 만들어져 있어 jdk 가 필수다.</p>
+<p>현 시점 jenkins jdk 최소 사양은 11 버전이니 참고.</p>
+<p>혹시 다른 버전을 사용하고 있고 11버전을 다운받았을 시 java 버전 변경방법은</p>
+
+```
+# alternatives --config java
+```
+
+위 명령어를 이용해 사용 할 jdk 번호를 입력해 변경하면 된다.
+<img src="/assets/img/os/jenkins_1.JPG" /><br><br>
+
+
 jenkins repo , key
 
-``` 
+```
 # sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+
+ERROR: cannot verify pkg.jenkins.io's certificate, issued by ‘/C=US/O=Let's Encrypt/CN=R3’:
+Issued certificate has expired.
+To connect to pkg.jenkins.io insecurely, use `--no-check-certificate'.
+오류 발생 시 echo "check_certificate = off" >> ~/.wgetrc
+
 # sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
-# yum install jenkins
+# yum install -y jenkins
 ```
 
 <br ><br >
@@ -21,11 +39,17 @@ jenkins repo , key
 
 ```
 # 파일열고 포트 수정
-# sudo vim /etc/sysconfig/jenkins
+# sudo vi /etc/sysconfig/jenkins
 # JENKINS_PORT="8080"
 
 # 젠킨스 구동
 # /etc/init.d/jenkins start
+
+# 위 경로에 jenkins 설정 파일이 없을 경우
+# vi /usr/lib/systemd/system/jenkins
+# JENKINS_PORT="8080"
+
+# systemctl start jenkins
 ```
 
 <br ><br >
@@ -42,7 +66,7 @@ jenkins repo , key
 # firewall-cmd --reload
 
 # 방화벽 접근 불가능시 
-# sudo vim /etc/sysconfig/jenkins
+# sudo vi /etc/sysconfig/jenkins
 # JENKINS_USER="root" jenkins 에서 root 로 변경 후 restart처리.
 # /etc/init.d/jenkins restart
 
@@ -150,4 +174,20 @@ Etc
  
 # 젠킨스 보안관련하여 설치가 진행되지 않을 시 하단 플러그인 을 받아서 넣어주면 된다.
 # https://updates.jenkins-ci.org/download/plugins/skip-certificate-check/
+```
+
+<br><br>
+
+2024-05-29 추가 <br>
+spring-boot 로 진행한 프로젝트도 jenkins 작업을 할 기회가 생겼는데<br>
+다른건 다 비슷하고 spring-boot 시작하는게 문제였다.<br>
+설정을 위에처럼 비슷하게 다 맞춰놓고<br>
+jenkins shell script 를 이용해 spring 내장 톰켓 구동을 하려고 하니<br>
+"mvn: command not found" 이라는 오류가 발생했다.<br>
+이는 jenkins shell script 에서 mvn 이라는 명령어를 찾을때<br>
+/usr/bin 하위로 찾아서 그렇다.<br>
+따로 링크를 잡아주면 정상적으로 톰켓 구동이 됐다.<br>
+
+```
+# sudo ln -s /usr/local/apache-maven-3.8.8/bin/mvn /usr/bin/mvn
 ```
