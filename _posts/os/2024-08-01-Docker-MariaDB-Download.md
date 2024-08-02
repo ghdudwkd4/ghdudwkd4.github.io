@@ -12,6 +12,11 @@ data: 2024-08-01 16:10
 
 ```
 docker pull mariadb
+
+# 특정 버전 원할 시 검색 후 pull
+docker search mariadb
+
+docker search mariadb:10.9
 ```
 
 <br>
