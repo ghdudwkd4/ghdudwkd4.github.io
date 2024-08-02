@@ -69,9 +69,6 @@ sudo yum list installed | grep docker
 
 # 아래 세가지는 꼭 있어야 된다.
 # docker-ce / docker-ce-cli / containerd.io
-
-# 서비스 상태 확인.
-sudo systemctl status docker
 ```
 
 <br>
