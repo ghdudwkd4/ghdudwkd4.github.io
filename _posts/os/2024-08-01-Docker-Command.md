@@ -93,11 +93,26 @@ docker stop [container]
 ```
 docker stop $(docker ps -a -q)
 ```
+
 <br>
 컨테이너 강제 종료 (SIGKILL 시그널 전달)
 
 ```
 docker kill [container]
+```
+
+<br>
+이미지 삭제
+
+```
+docker rmi [이미지 id]
+```
+
+<br>
+컨테이너를 삭제하기 전에 이미지를 삭제할 경우
+
+```
+docker rmi -f [이미지 id]
 ```
 
 <br>
