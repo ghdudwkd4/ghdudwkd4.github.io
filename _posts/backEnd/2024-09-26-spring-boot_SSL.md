@@ -43,4 +43,6 @@ server.ssl.protocol=TLS
 server.ssl.enabled-protocols=TLSv1.2
 server.ssl.ciphers=ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHERSA-AES128-SHA:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384
 ```
-생각보다 간단했다.
+생각보다 간단했다.<br>
+
+PS. 가비아 도메인 DNS 작업도 같이 해줬다.
