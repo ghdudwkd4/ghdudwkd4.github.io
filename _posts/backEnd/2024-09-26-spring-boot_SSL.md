@@ -2,7 +2,7 @@
 title: spring boot SSL 인증서 적용
 layout: post
 categories: backEnd
-order: 1
+order: 2
 data: 2024-09-26 15:00
 ---
 
