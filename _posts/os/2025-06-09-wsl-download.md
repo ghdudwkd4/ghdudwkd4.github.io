@@ -8,7 +8,8 @@ data: 2025-06-09 10:00
 
 # wsl 설치 및 사용방법
 
-wsl 은 "Windows Subsystem for Linux"의 약자로 <br>
+wsl 은 "Windows Subsystem for Linux"의 약자로
+
 Windows 운영 체제에서 Linux 환경을 실행할 수 있는 기능을 제공하는 기술
 
 먼저 cmd 를 관리자 모드로 실행 후 아래와 같이 입력
@@ -16,8 +17,9 @@ Windows 운영 체제에서 Linux 환경을 실행할 수 있는 기능을 제�
 # wsl --install
 ```
 
-install 시 계정 정보 입력 하는게 있는데, root 는 기본적으로 있는 계정이라, <br>
-사용을 못하고, 보통 본인 컴퓨터 계정을 예시로 세팅 해준다. <br>
+install 시 계정 정보 입력 하는게 있는데, root 는 기본적으로 있는 계정이라,
+
+사용을 못하고, 보통 본인 컴퓨터 계정을 예시로 세팅 해준다.
 
 설치 후 아래와 같이 입력 해 2 버전인지 확인
 ```
