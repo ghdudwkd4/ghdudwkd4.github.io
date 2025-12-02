@@ -19,248 +19,153 @@ data: 2025-12-02 15:00
 
 1. 아래 복사 후 generate-report.ps1 파일명으로 저장
 ```
+# ===============================
+# SonarQube PDF Report Generator (Chunked)
+# ===============================
+
 $SonarHost = "http://localhost:9000"
-$ProjectKey = "YOUR_PROJECT_KEY"
-$Token = "YOUR_TOKEN_HERE"
+$ProjectKey = "YOUR_PROJECT"
+$Token = ""
+$OutputPdfPrefix = "YOUR_PROJECT_Report_Page"
+$HtmlFilePrefix = "YOUR_PROJECT_Report_Page"
 
-$OutputPdf = "KVAAdmin_Report.pdf"
-$HtmlFile = "KVAAdmin_Report.html"
+# -----------------------------------
+# HTML Escape Function
+# -----------------------------------
+function Escape-Html {
+    param([string]$text)
+    if (-not $text) { return "" }
+    return $text -replace '&','&amp;' `
+                 -replace '<','&lt;' `
+                 -replace '>','&gt;' `
+                 -replace '"','&quot;' `
+                 -replace "'","&#39;"
+}
 
-# ==========================================
-# 1. 인증 토큰 처리 (Token:)
-# ==========================================
-$encodedAuth = [Convert]::ToBase64String(
-    [Text.Encoding]::ASCII.GetBytes("$Token:")
-)
+# -----------------------------------
+# 인증 정보
+# -----------------------------------
+$encodedAuth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes($Token + ":"))
 
-# ==========================================
-# 2. Summary Metrics 가져오기
-# ==========================================
-$metricsUrl = "$SonarHost/api/measures/component?component=$ProjectKey&metricKeys=bugs,vulnerabilities,code_smells,coverage,duplicated_lines_density,reliability_rating,security_rating,maintainability_rating"
-
+# -----------------------------------
+# 1. Summary Metrics 조회
+# -----------------------------------
+$metricsUrl = "$SonarHost/api/measures/component?component=$ProjectKey&metricKeys=bugs,vulnerabilities,code_smells,coverage"
 $summary = Invoke-RestMethod -Uri $metricsUrl -Headers @{Authorization="Basic $encodedAuth"}
 
-# 값 정리
-function Get-MetricValue($metricName) {
-    $measure = $summary.component.measures | Where-Object {$_.metric -eq $metricName}
-    if ($measure) { return $measure.value } else { return "N/A" }
-}
+$bugs = $summary.component.measures | Where-Object {$_.metric -eq "bugs"} | Select-Object -Expand value
+$vuln = $summary.component.measures | Where-Object {$_.metric -eq "vulnerabilities"} | Select-Object -Expand value
+$smells = $summary.component.measures | Where-Object {$_.metric -eq "code_smells"} | Select-Object -Expand value
+$coverage = $summary.component.measures | Where-Object {$_.metric -eq "coverage"} | Select-Object -Expand value
+if (-not $coverage) { $coverage = "N/A" }
 
-$bugs = Get-MetricValue "bugs"
-$vuln = Get-MetricValue "vulnerabilities"
-$smells = Get-MetricValue "code_smells"
-$coverage = Get-MetricValue "coverage"
-$dup = Get-MetricValue "duplicated_lines_density"
-$rel = Get-MetricValue "reliability_rating"
-$sec = Get-MetricValue "security_rating"
-$mnt = Get-MetricValue "maintainability_rating"
-
-# ==========================================
-# 3. Issues Pagination 처리
-# ==========================================
-
+# -----------------------------------
+# 2. Issues 전체 조회 (10,000 단위)
+# -----------------------------------
 $allIssues = @()
-$pageSize = 500
-$page = 1
-
-Write-Host "Fetching issues…"
+$pageSize = 10000
+$offset = 0
 
 while ($true) {
-    $issuesUrl = "$SonarHost/api/issues/search?componentKeys=$ProjectKey&p=$page&ps=$pageSize"
-    $result = Invoke-RestMethod -Uri $issuesUrl -Headers @{Authorization="Basic $encodedAuth"}
+    $issuesUrl = "$SonarHost/api/issues/search?componentKeys=$ProjectKey&pageSize=$pageSize&p=$([math]::Floor($offset / $pageSize) + 1)"
+    $pagedData = Invoke-RestMethod -Uri $issuesUrl -Headers @{Authorization="Basic $encodedAuth"}
 
-    $allIssues += $result.issues
-    Write-Host "  Page $page fetched: $($result.issues.Count) items"
+    if (-not $pagedData.issues -or $pagedData.issues.Count -eq 0) {
+        Write-Host "No more issues to load. Exiting..."
+        break
+    }
 
-    if ($result.issues.Count -lt $pageSize) { break }
-    $page++
+    $allIssues += $pagedData.issues
+    Write-Host "Loaded $($pagedData.issues.Count) issues (Total: $($allIssues.Count))"
+
+    $offset += $pagedData.issues.Count
+    if ($offset -ge $pagedData.paging.total) { break }
 }
 
-Write-Host "Total Issues Loaded: $($allIssues.Count)"
+$issuesData = [PSCustomObject]@{ issues = $allIssues }
 
-# ==========================================
-# 4. Severity Count
-# ==========================================
-$sevBlocker = ($allIssues | Where-Object {$_.severity -eq "BLOCKER"}).Count
-$sevCritical = ($allIssues | Where-Object {$_.severity -eq "CRITICAL"}).Count
-$sevMajor = ($allIssues | Where-Object {$_.severity -eq "MAJOR"}).Count
-$sevMinor = ($allIssues | Where-Object {$_.severity -eq "MINOR"}).Count
-$sevInfo = ($allIssues | Where-Object {$_.severity -eq "INFO"}).Count
+# -----------------------------------
+# 3. Chunk 단위로 HTML/PDF 생성
+# -----------------------------------
+$chunkSize = 1000   # 1파일당 1000건
+$totalIssues = $issuesData.issues.Count
+$pageCount = [math]::Ceiling($totalIssues / $chunkSize)
 
-# ==========================================
-# 5. HTML 템플릿 생성 (고급 리포트 스타일)
-# ==========================================
-$html = @"
+$chromePath = "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+
+for ($i = 0; $i -lt $pageCount; $i++) {
+    $start = $i * $chunkSize
+    $end = [math]::Min($start + $chunkSize - 1, $totalIssues - 1)
+    $chunkIssues = $issuesData.issues[$start..$end]
+
+    $HtmlFile = "$HtmlFilePrefix$($i+1).html"
+    $OutputPdf = "$OutputPdfPrefix$($i+1).pdf"
+
+    # HTML 생성
+    $html = @"
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset='UTF-8'>
-<title>SonarQube Premium Report</title>
-
+<title>YOUR PROJECT Report Page $($i+1)</title>
 <style>
-body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #eef1f4;
-    margin: 20px;
-}
-h1 {
-    color: #0d6efd;
-    margin-bottom: 5px;
-}
-h2 { color: #495057; }
-
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
-}
-
-/* Summary Grid */
-.summary-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-}
-.summary-item {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 12px 15px;
-    text-align: center;
-    border: 1px solid #dee2e6;
-}
-.summary-item b {
-    font-size: 22px;
-    color: #0d6efd;
-}
-
-/* Table */
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-th, td {
-    border: 1px solid #ccc;
-    padding: 6px 10px;
-    font-size: 13px;
-}
-th {
-    background: #0d6efd;
-    color: white;
-}
-
-/* Zebra Rows */
-tr:nth-child(even) {
-    background: #f8f9fa;
-}
-
-/* Severity Colors */
-.severity-BLOCKER { background:#e91e63 !important; color:white; }
-.severity-CRITICAL { background:#ff5722 !important; color:white; }
-.severity-MAJOR { background:#ff9800 !important; }
-.severity-MINOR { background:#2196f3 !important; color:white; }
-.severity-INFO { background:#9e9e9e !important; color:white; }
-
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; padding: 20px; }
+h1 { color: #0d6efd; } h2 { color: #495057; margin-top:40px; }
+.summary-card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
+table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+th, td { border: 1px solid #dee2e6; padding: 8px 10px; font-size: 14px; }
+th { background-color: #0d6efd; color: white; }
+tr:nth-child(even) { background: #f1f3f5; }
+.severity-BLOCKER { background:#dc3545 !important; color:white !important; }
+.severity-CRITICAL { background:#fd7e14 !important; color:white !important; }
+.severity-MAJOR { background:#ffc107 !important; color:black !important; }
+.severity-MINOR { background:#198754 !important; color:white !important; }
+.severity-INFO { background:#0dcaf0 !important; color:black !important; }
+.chart-container { width: 400px; height: 300px; margin-top:20px; }
 </style>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
-
-<h1>SonarQube Full Project Report</h1>
+<h1>SonarQube Project Report - Page $($i+1)</h1>
 <p>Generated: $(Get-Date)</p>
-
-<div class="card">
+<div class="summary-card">
 <h2>Summary</h2>
-
-<div class="summary-grid">
-    <div class="summary-item"><b>$bugs</b><br>Bugs</div>
-    <div class="summary-item"><b>$vuln</b><br>Vulnerabilities</div>
-    <div class="summary-item"><b>$smells</b><br>Code Smells</div>
-    <div class="summary-item"><b>$coverage %</b><br>Coverage</div>
-    <div class="summary-item"><b>$dup %</b><br>Duplications</div>
-    <div class="summary-item"><b>$rel</b><br>Reliability</div>
-    <div class="summary-item"><b>$sec</b><br>Security</div>
-    <div class="summary-item"><b>$mnt</b><br>Maintainability</div>
-</div>
-</div>
-
-<div class="card">
-<h2>Severity Chart</h2>
-<canvas id="severityChart" width="400" height="250"></canvas>
-
-<script>
-const ctx = document.getElementById('severityChart');
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['BLOCKER','CRITICAL','MAJOR','MINOR','INFO'],
-        datasets: [{
-            data: [$sevBlocker, $sevCritical, $sevMajor, $sevMinor, $sevInfo],
-            backgroundColor: ['#e91e63','#ff5722','#ff9800','#2196f3','#9e9e9e']
-        }]
-    },
-    options: { plugins: { legend: { display: false } } }
-});
-</script>
-</div>
-
-<div class="card">
-<h2>Issues Detail ($($allIssues.Count) items)</h2>
-
 <table>
-<tr>
-    <th>Type</th>
-    <th>Severity</th>
-    <th>Message</th>
-    <th>Rule</th>
-    <th>File</th>
-    <th>Line</th>
-</tr>
-"@
-
-# ==========================================
-# 이슈 전체 출력
-# ==========================================
-foreach ($issue in $allIssues) {
-    $sevClass = "severity-$($issue.severity)"
-    $html += "<tr class='$sevClass'>
-        <td>$($issue.type)</td>
-        <td>$($issue.severity)</td>
-        <td>$($issue.message)</td>
-        <td>$($issue.rule)</td>
-        <td>$($issue.component)</td>
-        <td>$($issue.line)</td>
-    </tr>"
-}
-
-$html += @"
+<tr><th>Metric</th><th>Value</th></tr>
+<tr><td>Bugs</td><td>$bugs</td></tr>
+<tr><td>Vulnerabilities</td><td>$vuln</td></tr>
+<tr><td>Code Smells</td><td>$smells</td></tr>
+<tr><td>Coverage</td><td>$coverage %</td></tr>
 </table>
 </div>
-
-</body>
-</html>
+<h2>Issues Detail</h2>
+<table>
+<tr><th>Type</th><th>Severity</th><th>Message</th><th>File</th><th>Line</th></tr>
 "@
 
-# ==========================================
-# HTML 저장
-# ==========================================
-$html | Out-File -Encoding utf8 $HtmlFile
+    foreach ($issue in $chunkIssues) {
+        $type = Escape-Html $issue.type
+        $sev = Escape-Html $issue.severity
+        $msg = Escape-Html $issue.message
+        $file = Escape-Html $issue.component
+        $line = Escape-Html $issue.line
 
-Write-Host "HTML Generated → $HtmlFile"
+        $sevClass = "severity-$sev"
+        $html += "<tr class='$sevClass'><td>$type</td><td>$sev</td><td>$msg</td><td>$file</td><td>$line</td></tr>"
+    }
 
-# ==========================================
-# 6. HTML → PDF 변환 (Chrome Headless)
-# ==========================================
-$chromePath = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+    $html += "</table></body></html>"
 
-Start-Process $chromePath `
-    "--headless --disable-gpu --print-to-pdf=$OutputPdf $HtmlFile" `
-    -Wait
+    # HTML 파일 저장
+    $html | Out-File -Encoding utf8 $HtmlFile
+    Write-Host "Generated HTML: $HtmlFile"
 
-Write-Host "PDF Report Created → $OutputPdf"
+    # PDF 변환
+    Start-Process $chromePath "--headless --disable-gpu --print-to-pdf=$OutputPdf $HtmlFile" -Wait
+    Write-Host "Generated PDF: $OutputPdf"
+}
+
+Write-Host "All pages generated: $pageCount pages."
 
 ```
 
