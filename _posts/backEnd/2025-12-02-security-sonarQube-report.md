@@ -18,7 +18,9 @@ data: 2025-12-02 15:00
 ## ps 파일 생성
 
 1. 아래 복사 후 generate-report.ps1 파일명으로 저장
-```
+
+
+```text
 # ===============================
 # SonarQube PDF Report Generator (Chunked)
 # ===============================
