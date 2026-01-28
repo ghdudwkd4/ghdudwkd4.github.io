@@ -55,14 +55,14 @@ sudo yum install docker-ce docker-ce-cli containerd.io -y
 
 <br>
 
-필자는 --allowerasing 을 사용해 충돌 되는걸 삭제하고 설치했다.
+`--allowerasing` 을 사용해 충돌 되는걸 삭제하고 설치했습니다.
 
 <a target="_blank" href="/assets/img/os/docker/docker-2.PNG"><img src="/assets/img/os/docker/docker-2.PNG" /></a>
 
 <br>
 
-이렇게 오류가 생겼을 시 docker 가 제대로 설치 안된경우가 있다.<br>
-아래 명령어를 실행해 다시 한번 체크한다.<br>
+이렇게 오류가 생겼을 시 docker 가 제대로 설치 안 된 경우가 있습니다.<br>
+아래 명령어를 실행해 다시 한번 체크합니다.<br>
 
 ```
 sudo yum list installed | grep docker
@@ -100,7 +100,7 @@ sudo systemctl status docker
 보통 OS의 디스크와 DATA의 디스크를 나눠쓰기 때문에 OS 디스크가 아닌 <br>
 DATA 디스크에 저장 되게 변경해준다. <br>
 
-아래 명령어를 쳐서 docker 기본 정보를 확인하고, Root Dir 위치를 확인해보자.
+아래 명령어를 쳐서 docker 기본 정보를 확인하고, Root Dir 위치를 확인.
 
 ```
 docker info
@@ -112,8 +112,8 @@ docker info
 
 <br>
 
-이제 Root Dir 경로를 바꿔보자. <br>
-필자는 /home/ 하위에 만들었다. <br>
+이제 Root Dir 경로를 변경하겠습니다. <br>
+/home 하위에 만들었습니다. <br>
 
 ```
 sudo mkdir /home/docker
@@ -139,7 +139,7 @@ systemctl restart docker
 
 <br>
 
-이제 아래와 같이 확인해 보면 여러 폴더 및 파일이 생성이 되있는걸 볼 수 있다.
+이제 아래와 같이 확인해 보면 여러 폴더 및 파일이 생성이 되있는걸 볼 수 있습니다.
 <a target="_blank" href="/assets/img/os/docker/docker-5.PNG"><img src="/assets/img/os/docker/docker-5.PNG" /></a>
 
 

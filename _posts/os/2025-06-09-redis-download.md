@@ -8,7 +8,7 @@ data: 2025-06-09 11:00
 
 # redis 설치 및 테스트
 
-redis 는 빠른 캐시/세션 저장용 in-memory db 이다.
+redis 는 빠른 캐시/세션 저장용 in-memory db 입니다.
 
 ※ wsl 환경에서 작업 할거라 docker desktop 있다는 가정하에 작성
 
@@ -30,9 +30,9 @@ docker 동작 확인
 # docker version
 # docker compose version
 ```
-여기서 오류가 나면 위 docker desktop 에서 WSL integration 이 안되어있을 가능성이 높다.
+여기서 오류가 나면 위 docker desktop 에서 WSL integration 이 안되어있을 가능성이 높습니다.
 
-필자는 redis 말고도 다른것들도 많이 테스트 하기 위해 docker_home 이라는 폴더를 만들어 보기 쉽게 정리했다.
+redis 말고도 다른것들도 많이 테스트 하기 위해 docker_home 이라는 폴더를 만들어 보기 쉽게 정리했습니다.
 ```
 # sudo mkdir /home/{계정명}/docker_home
 # cd /home/{계정명}/docker_home

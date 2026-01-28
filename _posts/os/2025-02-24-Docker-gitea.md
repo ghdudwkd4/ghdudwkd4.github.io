@@ -16,7 +16,7 @@ docker compose 를 같이 쓸거라 compose 도 같이 설치 <br />
 # yum list installed | grep docker
 # yum install docker-compose-plugin.x86_64
 ```
-필자는 /home/docker_compose_data 경로로 docker compose 에 관련 된 내용을 내부적으로 저장 하려고 폴더를 만들었다. <br />
+/home/docker_compose_data 경로로 docker compose 에 관련 된 내용을 내부적으로 저장 하려고 폴더를 만들었습니다. <br />
 하위에 docker-compose.yml 파일 생성 및 아래 shell 내용 작성
 
 ```
@@ -39,7 +39,7 @@ services:                       # service group
       - USER_UID=1000
       - USER_GID=1000
       - GITEA__APP_NAME="My Gitea"
-      - GITEA__server__ROOT_URL=http://user-server-ip:13297/  # 필자는 13297 port 를 사용해야 되서 명시
+      - GITEA__server__ROOT_URL=http://user-server-ip:13297/  # 13297 port 를 사용하려고 명시
       - GITEA__database__DB_TYPE=sqlite3                # db sqlite3 사용
     ports:
       - "13297:13297"  # Gitea 웹 UI (13297 -> 13297)    # {호스트 접근 port}:{컨테이너 접근 port}
@@ -60,7 +60,7 @@ cd /home/docker_compose_data
 docker-compose up -d
 ```
 이제 해당 port 로 웹에서 접근 시 gitea 설정 화면이 나오는데 <br />
-우린 기존에 있던 걸 쓸거라 다음 단계로 넘어간다.<br />
+기존에 있던 걸 쓸거라 다음 단계로 넘어갑니다.<br />
 
 이제 기존 서버에서 gitea 레포지토리 가져오기
 
@@ -76,4 +76,4 @@ tar -xzvf data.tar.gz
 docker-compose down
 docker-compose up -d
 ```
-이제 접속을 해보면 기존에 있던 데이터가 옮겨진걸 확인 할 수 있다.
+이제 접속을 해보면 기존에 있던 데이터가 옮겨진걸 확인 할 수 있습니다.

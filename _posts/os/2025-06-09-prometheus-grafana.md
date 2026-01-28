@@ -8,7 +8,7 @@ data: 2025-06-09 15:00
 
 # Prometheus & Grafana 설치 및 테스트
 
-필자는 IDE 가 IntelliJ 라서 IntelliJ 기준으로 설명하겠습니다.
+IntelliJ 기준으로 설명하겠습니다.
 
 ## ✅ 1. Spring Boot 프로젝트 생성
 ▶ IntelliJ에서 새 프로젝트 만들기
