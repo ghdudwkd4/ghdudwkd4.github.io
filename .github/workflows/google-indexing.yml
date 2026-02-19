@@ -1,0 +1,66 @@
+name: Google Indexing
+
+on:
+  push:
+    branches:
+      - main  # 또는 master (블로그 소스가 올라가는 브랜치명)
+  workflow_dispatch: # 수동으로도 실행 가능하게 설정
+
+jobs:
+  indexing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install google-auth requests
+
+      - name: Run Indexing Script
+        env:
+          # 환경 변수로 Secret 값을 불러옵니다.
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          # 파이썬에서 Secret 값을 읽어 JSON 파일로 임시 저장하는 로직 포함
+          python - <<EOF
+          import os
+          import json
+          import requests
+          import xml.etree.ElementTree as ET
+          from google.oauth2 import service_account
+          from google.auth.transport.requests import Request
+
+          # 1. 설정
+          SITEMAP_URL = "https://ghdudwkd4.github.io/sitemap.xml"
+          SA_KEY_JSON = os.environ.get("GCP_SA_KEY")
+
+          def get_urls_from_sitemap(url):
+              response = requests.get(url)
+              root = ET.fromstring(response.content)
+              namespace = {'ns': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
+              return [loc.text for loc in root.findall('.//ns:loc', namespace)]
+
+          def send_request():
+              info = json.loads(SA_KEY_JSON)
+              scopes = ["https://www.googleapis.com/auth/indexing"]
+              credentials = service_account.Credentials.from_service_account_info(info, scopes=scopes)
+              credentials.refresh(Request())
+              
+              urls = get_urls_from_sitemap(SITEMAP_URL)
+              endpoint = "https://indexing.googleapis.com/v3/urlNotifications:publish"
+              
+              for url in urls:
+                  data = {"url": url, "type": "URL_UPDATED"}
+                  headers = {"Authorization": f"Bearer {credentials.token}", "Content-Type": "application/json"}
+                  res = requests.post(endpoint, json=data, headers=headers)
+                  print(f"{res.status_code}: {url}")
+
+          if __name__ == "__main__":
+              send_request()
+          EOF
